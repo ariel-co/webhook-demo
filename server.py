@@ -1,5 +1,6 @@
 import threading
 import time
+import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, HttpUrl
 import requests
@@ -66,6 +67,20 @@ def unregister_webhook(webhook_id: str):
         
     print(f"[Provider] deleted registration: {webhook_id}")
     return {"status": "deleted", "webhook_id": webhook_id}
+
+
+# health check
+
+# don't log on health check
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        # Check if the log line contains your healthcheck route
+        return "GET / " not in record.getMessage()
+
+@app.on_event("startup")
+def modify_logging():
+    uvicorn_access_logger = logging.getLogger("uvicorn.access")
+    uvicorn_access_logger.addFilter(HealthCheckFilter())
 
 @app.get("/")
 async def health_check():
