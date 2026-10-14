@@ -1,6 +1,6 @@
 # Webhook Provider & Subscriber demo
 
-This project demonstrates a simple webhook architecture implemented with FastAPI and Docker Compose. It consists of a **Provider** (server) that streams automated events and a **Subscriber** (client) that registers for, receives, and eventually unregisters from the event stream.
+Demonstrates a simple webhook architecture implemented with FastAPI and Docker Compose. It has a **Provider** (server) that streams automated events and a **Subscriber** (client) that registers for, receives, and eventually unregisters from the event stream. Binds /tmp as volumes.
 
 ---
 
@@ -8,7 +8,7 @@ This project demonstrates a simple webhook architecture implemented with FastAPI
 
 * **Provider (`server.py`)**: A FastAPI application running on port `8000`. It manages webhook registrations and spawns background threads to send continuous event streams to registered subscribers.
 * **Subscriber (`client.py`)**: A FastAPI application running on port `9000`. It automatically registers itself with the provider upon startup, listens for incoming webhook payloads, and unregisters itself after receiving 3 events.
-* **Docker Compose (`docker-compose.yml`)**: Orchestrates both containers, linking them on a shared network environment.
+* **Docker Compose (`compose.yaml`)**: Orchestrates both containers, linking them on a shared network environment.
 
 ---
 
@@ -17,7 +17,7 @@ This project demonstrates a simple webhook architecture implemented with FastAPI
 * `server.py`: The webhook provider server.
 * `client.py`: The webhook subscriber client.
 * `Dockerfile`: Container configuration for building both Python services.
-* `docker-compose.yml`: Multi-container orchestration definition.
+* `compose.yaml`: Multi-container orchestration definition.
 * `requirements.txt`: Project Python dependencies (`fastapi`, `uvicorn`, `requests`, `pydantic`).
 
 ---
