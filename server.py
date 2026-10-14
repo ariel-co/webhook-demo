@@ -67,6 +67,10 @@ def unregister_webhook(webhook_id: str):
     print(f"[Provider] deleted registration: {webhook_id}")
     return {"status": "deleted", "webhook_id": webhook_id}
 
+@app.get("/")
+async def health_check():
+    return {"status": "healthy"}
+
 if __name__ == "__main__":
     import uvicorn
     print(f"[Provider] Starting webhook provider on port {PROVIDER_PORT}")

@@ -1,0 +1,7 @@
+# no splash message
+startup_message off
+screen -t server 0 docker compose up server
+split
+caption splitonly "%{= wb} To switch panes, press Ctrl-A, then Tab"
+focus bottom
+screen -t client 1 docker compose up client
