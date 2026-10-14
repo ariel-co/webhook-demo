@@ -1,10 +1,14 @@
 services:
   server:
     build: .
+    init: true
     command: uvicorn server:app --host 0.0.0.0 --port 8000
     # only for access from outside the container
     ports:
       - "8000:8000"
+    volumes:
+      # bind the host's /tmp
+      - /tmp:/app/tmp
     healthcheck:
       # test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
@@ -15,6 +19,8 @@ services:
 
   client:
     build: .
+    init: true
+    # start the server from the script's __main__
     command: python client.py
     depends_on:
       server:
@@ -22,3 +28,6 @@ services:
     # only for access from outside the container
     ports:
       - "9000:9000"
+    volumes:
+      # bind the host's /tmp
+      - /tmp:/app/tmp

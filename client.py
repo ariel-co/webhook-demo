@@ -10,21 +10,25 @@ is_docker = os.path.exists("/.dockerenv")
 server_name = 'server' if is_docker else '127.0.0.1'
 client_name = 'client' if is_docker else '127.0.0.1'
 
-# Use the startup event loop handler to kick off registration
-# @app.on_event("startup")
-# def startup_event():
+WEBHOOK_PORT = 9000
+PROVIDER_URL = f"http://{server_name}:8000"
+MY_WEBHOOK_ID = "sub_999_stream"
+MY_LISTENER_URL = f"http://{client_name}:{WEBHOOK_PORT}/webhook-receiver"
+
+def create_pidfile():
+    for pidfile_dir in ["/app/tmp", "/tmp"]:
+        pidfilename = f"{pidfile_dir}/webhook_client.pid"
+        with open(pidfilename, 'w') as pidfile:
+            print(os.getpid(), file=pidfile)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    create_pidfile()
     threading.Thread(target=register_with_provider, daemon=True).start()
     yield
     print("[Subscriber] Lifespan context exited. Subscriber is shutting down.")
 
 app = FastAPI(title="Webhook Subscriber", lifespan=lifespan)
-
-WEBHOOK_PORT = 9000
-PROVIDER_URL = f"http://{server_name}:8000"
-MY_WEBHOOK_ID = "sub_999_stream"
-MY_LISTENER_URL = f"http://{client_name}:{WEBHOOK_PORT}/webhook-receiver"
 
 # Counter to track incoming events
 event_counter = 0

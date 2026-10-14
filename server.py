@@ -1,6 +1,7 @@
 import threading
 import time
 import logging
+import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, HttpUrl
 import requests
@@ -77,10 +78,17 @@ class HealthCheckFilter(logging.Filter):
         # Check if the log line contains your healthcheck route
         return "GET / " not in record.getMessage()
 
+# this decorator is deprecated
 @app.on_event("startup")
 def modify_logging():
     uvicorn_access_logger = logging.getLogger("uvicorn.access")
     uvicorn_access_logger.addFilter(HealthCheckFilter())
+
+@app.on_event("startup")
+def create_pidfile():
+    for pidfile_dir in ["/app/tmp", "/tmp"]:
+        with open(f"{pidfile_dir}/webhook_server.pid", 'w') as pidfile:
+            print(os.getpid(), file=pidfile)
 
 @app.get("/")
 async def health_check():
